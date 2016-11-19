@@ -18,6 +18,7 @@ package co.paulburke.android.itemtouchhelperdemo.helper;
 
 import android.graphics.Canvas;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
@@ -34,6 +35,9 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
     public static final float ALPHA_FULL = 1.0f;
+
+    private Integer mFrom = null;
+    private Integer mTo = null;
 
     private final ItemTouchHelperAdapter mAdapter;
 
@@ -70,6 +74,10 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
         if (source.getItemViewType() != target.getItemViewType()) {
             return false;
         }
+
+        if (mFrom == null)
+            mFrom = source.getAdapterPosition();
+        mTo = target.getAdapterPosition();
 
         // Notify the adapter of the move
         mAdapter.onItemMove(source.getAdapterPosition(), target.getAdapterPosition());
@@ -119,5 +127,12 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
             ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
             itemViewHolder.onItemClear();
         }
+
+        if (mFrom != null && mTo != null)
+            mAdapter.onDrop(viewHolder, mFrom, mTo);
+        else
+            mAdapter.onDrop(viewHolder, viewHolder.getAdapterPosition(), viewHolder.getAdapterPosition());
+
+        mFrom = mTo = null;
     }
 }
